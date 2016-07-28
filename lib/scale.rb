@@ -1,6 +1,7 @@
 require 'scale/client'
 require 'scale/output'
-require 'scale/error'
+require 'scale/error/device_disconnected_error.rb'
+require 'scale/error/device_read_error.rb'
 
 module Scale
   class << self

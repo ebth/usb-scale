@@ -20,7 +20,24 @@ describe Scale::Client do
       end
     end
 
-    pending "with a disconnected device"
-    pending "with a failure"
+    context "with a disconnected device" do
+      before do
+        allow(subject).to receive(:device).and_raise Scale::DeviceDisconnectedError
+      end
+
+      it "returns an empty JSON hash" do
+        expect(do_the_thing).to eq('{}')
+      end
+    end
+
+    context "with a read failure" do
+      before do
+        allow(subject).to receive(:read_device_data).and_raise Scale::DeviceReadError
+      end
+
+      it "returns an empty JSON hash" do
+        expect(do_the_thing).to eq('{}')
+      end
+    end
   end
 end

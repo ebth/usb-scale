@@ -18,6 +18,8 @@ module Scale
         kg: output.as_kg,
         stable: output.stable?
       }.to_json
+    rescue
+      "{}"
     end
 
     def loop
@@ -30,7 +32,11 @@ module Scale
     private
 
     def device
-      @device ||= HidApi.hid_open(VENDOR_ID, PRODUCT_ID, 0)
+      @device ||= begin
+        device = HidApi.hid_open(VENDOR_ID, PRODUCT_ID, 0)
+        raise DeviceDisconnectedError if device.address == 0x0
+        device
+      end
     end
 
     def close_device
@@ -41,15 +47,12 @@ module Scale
     def read_device_data
       buffer = FFI::Buffer.new(:char, USB_DATA_SIZE)
       res = HidApi.hid_read(device, buffer, USB_DATA_SIZE)
-      raise Scale::Error, "command read failed" if res <= 0
+      raise DeviceReadError if res <= 0
       buffer.read_bytes(USB_DATA_SIZE).unpack("c*")
     end
 
     def get_output
-      puts "DATA: #{read_device_data}"
       Output.new(read_device_data)
-    rescue StandardError => e
-      puts e
     ensure
       close_device
     end

@@ -19,7 +19,7 @@ module Scale
       self.raw_stability = raw_data[1]
       self.raw_mode = raw_data[2]
       self.raw_scale_factor = raw_data[3]
-      self.raw_weight = (raw_data[5] << 8 | raw_data[4]) * 1.0
+      self.raw_weight = (raw_data[5] << 8 | (raw_data[4]  & 0xFF)) * 1.0
     end
 
     def stable?
@@ -40,7 +40,7 @@ module Scale
       elsif in_kg_mode?
         (scaled_weight * 2.20462262185).round(2)
       else
-        raise Scale::Error, "Unknown mode, unable to calculate weight"
+        raise Scale::DeviceInvalidModeError
       end
     end
 
@@ -54,7 +54,7 @@ module Scale
       elsif in_kg_mode?
         scaled_weight.round(2)
       else
-        raise Scale::Error, "Unknown mode, unable to calculate weight"
+        raise Scale::DeviceInvalidModeError
       end
     end
 

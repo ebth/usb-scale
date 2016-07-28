@@ -1,4 +1,4 @@
-# ebth-scale
+# usb-scale
 
 Reads input from Dymo S100 Digital USB Postal Scale
 

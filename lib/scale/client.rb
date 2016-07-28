@@ -29,20 +29,29 @@ module Scale
 
     private
 
-      def get_output
-        device = HidApi.hid_open(VENDOR_ID, PRODUCT_ID, 0)
-        buffer = FFI::Buffer.new(:char, USB_DATA_SIZE)
-        res = HidApi.hid_read(device, buffer, USB_DATA_SIZE)
-        puts device
-        puts buffer
-        puts res
-        raise Scale::Error, "command read failed" if res <= 0
-        bytes = buffer.read_bytes(USB_DATA_SIZE)
-        HidApi.hid_close device
-        Output.new(bytes.unpack("c*"))
-      rescue StandardError => e
-        puts e
-      end
+    def device
+      @device ||= HidApi.hid_open(VENDOR_ID, PRODUCT_ID, 0)
+    end
 
+    def close_device
+      HidApi.hid_close @device
+      @device = nil
+    end
+
+    def read_device_data
+      buffer = FFI::Buffer.new(:char, USB_DATA_SIZE)
+      res = HidApi.hid_read(device, buffer, USB_DATA_SIZE)
+      raise Scale::Error, "command read failed" if res <= 0
+      buffer.read_bytes(USB_DATA_SIZE).unpack("c*")
+    end
+
+    def get_output
+      puts "DATA: #{read_device_data}"
+      Output.new(read_device_data)
+    rescue StandardError => e
+      puts e
+    ensure
+      close_device
+    end
   end
 end

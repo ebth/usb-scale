@@ -1,9 +1,5 @@
 source 'https://rubygems.org'
 
+gemspec
+
 ruby '2.2.5'
-
-gem 'hid_api'
-
-group :development do
-  gem 'pry'
-end

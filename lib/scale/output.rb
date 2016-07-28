@@ -8,7 +8,7 @@ module Scale
 
     # Data description for Dymo model S100
     # => [0] Unknown 3
-    # => [1] Stability (2 when at 0, 3 when getting stable, 4 when stable, 5 when negative)
+    # => [1] Stability (2 when at 0, 3 when getting stable, 4 when stable, 5 when negative, 6 when too much weight)
     # => [2] Mode (lbs = 12, kg = 3)
     # => [3] Scale factor
     # => [4-5] 16 bit weight
@@ -19,7 +19,7 @@ module Scale
       self.raw_stability = raw_data[1]
       self.raw_mode = raw_data[2]
       self.raw_scale_factor = raw_data[3]
-      self.raw_weight = (raw_data[5] << 8 | raw_data[4]) * 1.0
+      self.raw_weight = (raw_data[5] << 8 | (raw_data[4]  & 0xFF)) * 1.0
     end
 
     def stable?
@@ -40,7 +40,7 @@ module Scale
       elsif in_kg_mode?
         (scaled_weight * 2.20462262185).round(2)
       else
-        raise Scale::Error, "Unknown mode, unable to calculate weight"
+        raise Scale::DeviceInvalidModeError
       end
     end
 
@@ -54,7 +54,7 @@ module Scale
       elsif in_kg_mode?
         scaled_weight.round(2)
       else
-        raise Scale::Error, "Unknown mode, unable to calculate weight"
+        raise Scale::DeviceInvalidModeError
       end
     end
 

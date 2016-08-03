@@ -8,6 +8,7 @@ Gem::Specification.new do |s|
   s.email       = 'developers@ebth.com'
   s.files       = ["lib/scale.rb", "lib/scale/output.rb"]
   s.homepage    = 'http://rubygems.org/gems/usb-scale'
+  s.license     = 'Apache-2.0'
 
   s.add_dependency "hid_api", "0.1.1"
   s.add_development_dependency "pry", "0.10.3"
